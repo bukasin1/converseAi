@@ -37,12 +37,15 @@ def save_history(username, history):
     with open(file_path, "w") as f:
         json.dump(history, f)
 
+    # remove keep conversation flag for new username entries
+    if "keep_conversation" in st.session_state:
+        del st.session_state.keep_conversation
+
 
 def remove_history(username):
     file_path = f"history_{username}.json"
     if os.path.exists(file_path):
         os.remove(file_path)
-
 
 
 # Sidebar: User identification and AI character selection
@@ -84,7 +87,10 @@ if character_type == "Custom":
     )
 
 # Button to set/reset the AI character (which resets the conversation)
-if st.sidebar.button("Set AI Character", help='This would set the selected AI character and reset the conversation history'):
+if st.sidebar.button(
+    "Set AI Character",
+    help="This would set the selected AI character and reset the conversation history",
+):
     system_prompt = None
     if character_type == "Generate New" and st.session_state.generated_character:
         system_prompt = st.session_state.generated_character
@@ -94,16 +100,22 @@ if st.sidebar.button("Set AI Character", help='This would set the selected AI ch
     #     system_prompt = "You are a helpful assistant."  # Fallback
 
     if system_prompt is not None:
-        # Reset the conversation history with the chosen system prompt.
+        # Reset the conversation history with the chosen system prompt and set flag to keep this initial conversation in state.
         st.session_state.conversation = [("system", system_prompt)]
+        st.session_state.keep_conversation = True
         remove_history(username)
         st.rerun()
 
 # Load persistent conversation history (if it exists)
-if "conversation" not in st.session_state:
-    history = load_history(username)
-    if history:
-        st.session_state.conversation = history
+# else clear any conversation in state
+history = load_history(username)
+print("found conversation history...", history, "\n")
+if history:
+    print("setting conversation history...", history, "\n\n")
+    st.session_state.conversation = history
+# Keep initial system prompt in converstation.
+elif "conversation" in st.session_state and "keep_conversation" not in st.session_state:
+    del st.session_state.conversation
 
 st.title("Chat with Select AI Character")
 
