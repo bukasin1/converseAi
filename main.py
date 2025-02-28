@@ -103,7 +103,7 @@ if st.sidebar.button(
     # else:
     #     system_prompt = "You are a helpful assistant."  # Fallback
 
-    if system_prompt is not None:
+    if system_prompt is not None and system_prompt is not "":
         # Reset the conversation history with the chosen system prompt and set flag to keep this initial conversation in state.
         st.session_state.conversation = [("system", system_prompt)]
         st.session_state.keep_conversation = True
