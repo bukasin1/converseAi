@@ -84,7 +84,7 @@ if character_type == "Custom":
     )
 
 # Button to set/reset the AI character (which resets the conversation)
-if st.sidebar.button("Set AI Character"):
+if st.sidebar.button("Set AI Character", help='This would set the selected AI character and reset the conversation history'):
     system_prompt = None
     if character_type == "Generate New" and st.session_state.generated_character:
         system_prompt = st.session_state.generated_character
@@ -105,7 +105,7 @@ if "conversation" not in st.session_state:
     if history:
         st.session_state.conversation = history
 
-st.title("Chat with Your AI Character")
+st.title("Chat with Select AI Character")
 
 if username is not None and "conversation" in st.session_state:
 
@@ -144,5 +144,8 @@ if username is not None and "conversation" in st.session_state:
         st.rerun()
 else:
     st.write(
-        "Kindly enter a username and select AI character to chat with from the sidebar"
+        "Kindly enter a username and select an AI character from the sidebar to start a chat with, OR, to continue from an existing conversation"
+    )
+    st.write(
+        "***NOTE:*** Ensure **username** is unique and known to you only, to avoid others gaining access to your conversation history"
     )
