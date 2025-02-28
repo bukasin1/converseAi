@@ -24,6 +24,10 @@ def load_history(username):
         return []
     file_path = f"history_{username}.json"
     if os.path.exists(file_path):
+        # remove keep conversation flag for new username entries
+        if "keep_conversation" in st.session_state:
+            print("removing keep_conversation flag")
+            del st.session_state.keep_conversation
         with open(file_path, "r") as f:
             return json.load(f)
     else:
@@ -31,15 +35,15 @@ def load_history(username):
 
 
 def save_history(username, history):
+    # remove keep conversation flag for new username entries
+    if "keep_conversation" in st.session_state:
+        del st.session_state.keep_conversation
+
     if username is None:
         return
     file_path = f"history_{username}.json"
     with open(file_path, "w") as f:
         json.dump(history, f)
-
-    # remove keep conversation flag for new username entries
-    if "keep_conversation" in st.session_state:
-        del st.session_state.keep_conversation
 
 
 def remove_history(username):
@@ -109,9 +113,7 @@ if st.sidebar.button(
 # Load persistent conversation history (if it exists)
 # else clear any conversation in state
 history = load_history(username)
-print("found conversation history...", history, "\n")
 if history:
-    print("setting conversation history...", history, "\n\n")
     st.session_state.conversation = history
 # Keep initial system prompt in converstation.
 elif "conversation" in st.session_state and "keep_conversation" not in st.session_state:
